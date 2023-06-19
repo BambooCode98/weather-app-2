@@ -20,12 +20,14 @@ height = canvas.height = window.innerHeight;
 let stars = [];
 
 class Star{
-  constructor(x,y,radius) {
+  constructor(x,y,radius, rate) {
     this.x = x;
     this.y = y;
     this.size = radius;
     this.blur = radius;
+    this.sparkle = rate;
   }
+  inc = 1;
 
   update() {
     ctx.beginPath();
@@ -38,12 +40,16 @@ class Star{
   }
 
   strobe() {
-    ctx.shadowBlur = Math.random()*this.blur;
+    
+    // console.log(this.inc);
+    this.inc+=0.08*this.sparkle;
+    ctx.shadowBlur = this.blur + Math.sin(this.inc)*2;
+    this.inc += 1;
   }
 }
 
 for(let i = 0; i < 50; i++) {
-  stars.push(new Star(width*Math.random(), height * Math.random(), Math.random()*4));
+  stars.push(new Star(width*Math.random(), height * Math.random(), Math.random()*4, Math.random()*2));
 }
 
 cityInput.addEventListener("submit", (e) => {
