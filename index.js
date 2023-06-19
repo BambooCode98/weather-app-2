@@ -7,6 +7,44 @@ let in2 = document.querySelector(".in2");
 let lat, long, city, state, country = "United States";
 let getCityf = false;
 let getDataf = false;
+// let isDay = true;
+
+let canvas = document.querySelector('.canvas');
+
+
+
+let ctx = canvas.getContext('2d'),
+width = canvas.width = window.innerWidth,
+height = canvas.height = window.innerHeight;
+
+let stars = [];
+
+class Star{
+  constructor(x,y,radius) {
+    this.x = x;
+    this.y = y;
+    this.size = radius;
+    this.blur = radius;
+  }
+
+  update() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size,0,Math.PI*2);
+    ctx.fillStyle = "white";
+    ctx.shadowColor = "white";
+    // ctx.shadowBlur = this.blur*2;
+    this.strobe();
+    ctx.fill();
+  }
+
+  strobe() {
+    ctx.shadowBlur = Math.random()*this.blur;
+  }
+}
+
+for(let i = 0; i < 50; i++) {
+  stars.push(new Star(width*Math.random(), height * Math.random(), Math.random()*4));
+}
 
 cityInput.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -24,35 +62,17 @@ cityInput.addEventListener("submit", (e) => {
   }
 })
 
-// class Weather{
-
-//   constructor() {
-//     this.wData;
-//     this.wcity;
-//     this.lat = 37.9, this.long = -89.5;
-//     this.location = "Vergennes", this.state = "IL", this.country = "United States";
-//   }
-
- 
-//   getw() {
-//     return this.wData; 
-//   }
-
-//   getc() {
-//     return this.wcity;
-//   }
-// }
 
 
 
 async function getCity() {
   let response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&appid=daa0efcefa043d17b3c66f5e04fe9bd7`, {mode: 'cors'});
   let cityr  = await response.json();
-  console.log(cityr[0]);
+  // console.log(cityr[0]);
   lat = (cityr[0].lat).toFixed(2);
   long = (cityr[0].lon).toFixed(2);
 
-  console.log(lat,long);
+  // console.log(lat,long);
 
   try {
     let data = await fetch(`https://api.weather.gov/points/${lat},${long}`, {mode: 'cors'});
@@ -60,7 +80,7 @@ async function getCity() {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    console.log(wxPeriods);
+    // console.log(wxPeriods);
 
     wxPeriods.forEach(obj => {
       let box = document.createElement("div");
@@ -69,6 +89,10 @@ async function getCity() {
       day.textContent = obj.name;
       let isDaytime = document.createElement('p');
       isDaytime = obj.isDaytime;
+      if(obj.number === 1) {
+        // console.log(isDaytime, "daytime?");
+        changeStyles(obj.isDaytime);
+      }
       let sWords = document.createElement('p');
       sWords = obj.shortForecast;
       let dWords = document.createElement('p');
@@ -92,5 +116,27 @@ function run() {
     // console.log("from bottom if");
   }
 }
-                                                       
+         
 
+
+function changeStyles(isDay) {
+  if(isDay) {
+    canvas.style.backgroundColor = "white";
+  } else {
+    canvas.style.backgroundColor = "#0c1445";
+  }
+}
+
+
+function animate() {
+  ctx.fillStyle = "#0c1445";
+  ctx.fillRect(0,0,width,height);
+
+  stars.forEach(star => {
+    star.update();
+    
+  })
+  requestAnimationFrame(animate);
+}
+
+animate();

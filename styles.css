@@ -2,6 +2,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  /* color: white; */
 }
 
 html,body{
@@ -10,3 +11,12 @@ html,body{
   overflow: none;
 }
 
+canvas{
+  position: absolute;
+  z-index: -50;
+  /* background-color: #0c1445; */
+}
+
+/* button{
+  color: black;
+} */
