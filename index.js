@@ -42,9 +42,9 @@ class Star{
   strobe() {
     
     // console.log(this.inc);
-    this.inc+=0.08*this.sparkle;
+    this.inc+=0.1*this.sparkle;
     ctx.shadowBlur = this.blur + Math.sin(this.inc)*2;
-    this.inc += 1;
+    // this.inc += 1;
   }
 }
 
