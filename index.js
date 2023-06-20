@@ -83,7 +83,7 @@ class Sunray{
     const gradient = ctx.createLinearGradient(this.x,this.y,this.w,this.h);
     gradient.addColorStop(0,"#fce570");
     gradient.addColorStop(0.5,"#fce570");
-    gradient.addColorStop(0.75,"#fce570");
+    // gradient.addColorStop(0.75,"#fce570");
     // gradient.addColorStop(0,"black");
     gradient.addColorStop(1,"#2eb5e5");
     return gradient;
@@ -106,7 +106,7 @@ class Sunray{
   }
 }
 
-for(let i = 0; i < 75; i++) {
+for(let i = 0; i < 100; i++) {
   // rayArray.push(new Sunray(0,0,10,25,5));
   rayArray.push(new Sunray(0,0,(Math.random()*(9-1)+1),(Math.random()*(75-15)+15)*2,Math.random()*(i-i/2)+i/2,Math.PI*2*(Math.random()+2),(Math.random()*(10-5)+5)/2));
 }
@@ -321,6 +321,7 @@ function animateDay() {
   ctx.beginPath();
   // let grad = getGradient()
   rayArray.forEach(ray => {
+    ctx.shadowBlur = 0;
     ray.update();
     // ctx.fillStyle = ray.gradient();
     // ctx.fillRect(ray.x,ray.y,ray.w,ray.h)
