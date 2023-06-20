@@ -21,6 +21,7 @@ let ctx = canvas.getContext('2d'),
 width = canvas.width = window.innerWidth,
 height = canvas.height = window.innerHeight;
 
+// let grad = getGradient(this.x,this.y,this.w,this.h);
 
 
 defCities();
@@ -74,9 +75,20 @@ class Sunray{
     this.amp = amplitude;
   }
 
-  grad = "";
+  grad;
   rayChange = 0.1;
   
+  gradient() {
+    // console.log(x,y,w,h);
+    const gradient = ctx.createLinearGradient(this.x,this.y,this.w,this.h);
+    gradient.addColorStop(0,"#fce570");
+    gradient.addColorStop(0.5,"#fce570");
+    gradient.addColorStop(0.75,"#fce570");
+    // gradient.addColorStop(0,"black");
+    gradient.addColorStop(1,"#2eb5e5");
+    return gradient;
+
+  }
 
   update() {
     ctx.save();
@@ -84,11 +96,10 @@ class Sunray{
     ctx.translate(width/2,height/2);
     ctx.rotate(this.theta);
     this.rayChange+=this.amt*0.005;
-    ctx.rect(0,0,this.w,this.h+(this.amp*Math.sin(this.rayChange*0.1)));
-    // grad = getGradient(this.x,this.y,this.w,this.h);
+    ctx.fillStyle = this.gradient();
+    // ctx.rect(0,0,this.w,this.h+(this.amp*Math.sin(this.rayChange*0.1)));
     // console.log(typeof grad);
-    // ctx.fillStyle = grad;
-    // ctx.fillRect(this.x,this.y,this.w,this.h);
+    ctx.fillRect(0,0,this.w,this.h+(this.amp*Math.sin(this.rayChange*0.1)));
     // ctx.fill();
     ctx.restore();
     
@@ -128,7 +139,7 @@ class Sun{
     this.y = height/2;
     ctx.arc(this.x,this.y,50,0,Math.PI*2);
     // ctx.fillRect
-    this.drawRay();
+    // this.drawRay();
     ctx.fillStyle = "#fce570";
     // ctx.fillStyle = gradient;
     // ctx.fillRect(0,0,50,50);
@@ -307,11 +318,17 @@ function animateDay() {
   ctx.fillRect(0,0,width,height);
 
   
+  ctx.beginPath();
+  // let grad = getGradient()
+  rayArray.forEach(ray => {
+    ray.update();
+    // ctx.fillStyle = ray.gradient();
+    // ctx.fillRect(ray.x,ray.y,ray.w,ray.h)
+    // console.log("update?");
+  })
+  ctx.fill();
   sun.update();
-  // rayArray.forEach(ray => {
-  //   ray.update();
-  // })
-
+  
   requestAnimationFrame(animateDay);
 
 }
@@ -324,10 +341,7 @@ function collapseMenu() {
 
 
 function getGradient(x,y,w,h) {
-  const gradient = ctx.createLinearGradient(x,y,w,h);
-  gradient.addColorStop(0,"yellow");
-  gradient.addColorStop(1,"#2eb5e5");
-  return gradient;
+
 }
 
 
