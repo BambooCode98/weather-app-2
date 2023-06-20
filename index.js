@@ -13,6 +13,9 @@ let getDataf = false;
 let called = false;
 let wxArray = [];
 let elArray  =[];
+let cities = [];
+let empty = true;
+
 let canvas = document.querySelector('.canvas');
 let ctx = canvas.getContext('2d'),
 width = canvas.width = window.innerWidth,
@@ -20,7 +23,7 @@ height = canvas.height = window.innerHeight;
 
 
 
-
+defCities();
 
 
 window.addEventListener('resize', () => {
@@ -145,12 +148,13 @@ let sun = new Sun(width/2,height/2);
 
 cityInput.addEventListener("submit", (e) => {
   e.preventDefault();
+  empty = false;
   let i1 = in1.value;
   let i2 = in2.value;
   // console.log(i1,i2);
   city = i1;
   state = i2;
-  console.log(elArray.length);
+  // console.log(elArray.length);
   if(elArray.length != 0) {
     elArray.forEach(el => {
       // console.log(el);
@@ -159,28 +163,38 @@ cityInput.addEventListener("submit", (e) => {
     elArray = [];
   }
   cityInput.reset();
-  head.textContent = "BambooWX - " + i1 + ", " + i2;
-  head.style.fontSize = "1.5rem";
-  head.style.fontWeight = "700";
+  // head.textContent = "BambooWX - " + i1 + ", " + i2;
+  // if(width < 500) {
+  //   head.style.fontSize = "1.2rem";
+  // } else {
+  //   head.style.fontSize = "1.5rem";
+  // }
+  // head.style.fontWeight = "700";
   // head.
   if(city !== null && state !== null) {
     getCityf = true;
     getDataf = true;
     // console.log("getting city data");
-    run();
+    run(city,state,"United States");
   }
 })
 
 
 
 
-async function getCity() {
+async function getCity(city,state,country) {
+  head.textContent = "BambooWX - " + city + ", " + state;
+  if(width < 500) {
+    head.style.fontSize = "1.2rem";
+  } else {
+    head.style.fontSize = "1.5rem";
+  }
+  head.style.fontWeight = "700";
   let response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&appid=daa0efcefa043d17b3c66f5e04fe9bd7`, {mode: 'cors'});
   let cityr  = await response.json();
   // console.log(cityr[0]);
   lat = (cityr[0].lat).toFixed(2);
   long = (cityr[0].lon).toFixed(2);
-
   // console.log(lat,long);
 
   try {
@@ -189,7 +203,7 @@ async function getCity() {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    console.log(wxPeriods);
+    // console.log(wxPeriods);
     // console.log(wxArray, "before filling");
     // wxPeriods.forEach(period => {
     //   wxArray.push(period);
@@ -205,7 +219,7 @@ async function getCity() {
       isDaytime = obj.isDaytime;
       if(obj.number === 1) {
         // console.log(isDaytime, "daytime?");
-        console.log(isDaytime);
+        // console.log(isDaytime);
         changeStyles(obj.isDaytime);
       }
       let sWords = document.createElement('p');
@@ -236,10 +250,10 @@ async function getCity() {
 }
 
 
-function run() {
+function run(city,state,country) {
   if(getDataf && !called) {
     // called = true;
-    getCity();
+    getCity(city,state,country);
     // console.log("from bottom if");
   }
 }
@@ -304,4 +318,32 @@ function getGradient(x,y,w,h) {
   gradient.addColorStop(0,"yellow");
   gradient.addColorStop(1,"#2eb5e5");
   return gradient;
+}
+
+
+function defCities() {
+  let city1 = {
+    num: 1,
+    city: "Chicago",
+    state: "Illinois"
+  }
+  let city2 = {
+    num: 2,
+    city: "Los Angeles",
+    state: "California"
+  }
+  let city3 = {
+    num: 3,
+    city: "New York City",
+    state: "New York"
+  }
+  cities.push(city1,city2,city3);
+
+  let num = Math.random()*3;
+  let defaultCity = cities[Math.floor(num)].city;
+  let defaultState = cities[Math.floor(num)].state;
+
+  if(empty){
+    getCity(defaultCity,defaultState);
+  }
 }
