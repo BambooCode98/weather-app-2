@@ -138,6 +138,8 @@ canvas{
   .wxContainer{
     padding-left: 20%;
     padding-right: 20%;
+    display: flex;
+    justify-content: center;
   }
 
   .form{
