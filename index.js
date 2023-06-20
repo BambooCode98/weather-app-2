@@ -160,6 +160,8 @@ cityInput.addEventListener("submit", (e) => {
   }
   cityInput.reset();
   head.textContent = "BambooWX - " + i1 + ", " + i2;
+  head.style.fontSize = "1.5rem";
+  head.style.fontWeight = "700";
   // head.
   if(city !== null && state !== null) {
     getCityf = true;

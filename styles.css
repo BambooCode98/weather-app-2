@@ -37,8 +37,12 @@ canvas{
   border-bottom: white 1px solid;
   position: fixed;
   width: 100%;
+
+}
+
+.title{
   font-weight: 700;
-  font-size: 1rem;
+  /* font-size: 2rem; */
 }
 
 .form{
@@ -126,7 +130,7 @@ canvas{
   }
 
   .header{
-    font-size: 1.5em;
+    font-size: 1.5rem;
   }
 }
 
