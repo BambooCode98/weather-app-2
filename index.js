@@ -121,6 +121,8 @@ class Sun{
   
   update() {
     ctx.beginPath();
+    this.x = width/2;
+    this.y = height/2;
     ctx.arc(this.x,this.y,50,0,Math.PI*2);
     // ctx.fillRect
     this.drawRay();
@@ -156,10 +158,13 @@ cityInput.addEventListener("submit", (e) => {
     })
     elArray = [];
   }
+  cityInput.reset();
+  head.textContent = "BambooWX - " + i1 + ", " + i2;
+  // head.
   if(city !== null && state !== null) {
     getCityf = true;
     getDataf = true;
-    console.log("getting city data");
+    // console.log("getting city data");
     run();
   }
 })
@@ -212,7 +217,7 @@ async function getCity() {
       let endl3 = document.createElement('br');
       box.style.marginTop= "5%";
       if(obj.number === 14) {
-        box.style.marginBottom= "50%";
+        box.style.marginBottom= "40%";
       }
       box.append(endl3,day,wxImage,endl,sWords,endl2,dWords);
       main.append(box);
