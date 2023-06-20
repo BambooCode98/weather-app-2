@@ -152,9 +152,13 @@ cityInput.addEventListener("submit", (e) => {
   let i1 = in1.value;
   let i2 = in2.value;
   // console.log(i1,i2);
-  city = i1;
-  state = i2;
-  // console.log(elArray.length);
+
+  let firstCityLetter = i1.charAt(0).toUpperCase();
+  let firstStateLetter = i2.charAt(0).toUpperCase();
+  // console.log(firstCityLetter,firstStateLetter);
+  city = i1.replace(i1.charAt(0),firstCityLetter);
+  state = i2.replace(i2.charAt(0),firstStateLetter);
+  // console.log(city,state);
   if(elArray.length != 0) {
     elArray.forEach(el => {
       // console.log(el);
@@ -203,7 +207,7 @@ async function getCity(city,state,country) {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    // console.log(wxPeriods);
+    console.log(wxPeriods);
     // console.log(wxArray, "before filling");
     // wxPeriods.forEach(period => {
     //   wxArray.push(period);
