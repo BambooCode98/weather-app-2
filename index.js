@@ -216,6 +216,7 @@ async function getCity(city,state,country) {
     wxPeriods.forEach(obj => {
       let box = document.createElement("div");
       // console.log(obj);
+      box.classList.add('textBox');
       elArray.push(box);
       let day = document.createElement('h3');
       day.textContent = obj.name;
@@ -227,7 +228,8 @@ async function getCity(city,state,country) {
         changeStyles(obj.isDaytime);
       }
       let sWords = document.createElement('p');
-      sWords = obj.shortForecast;
+      sWords.classList.add('short');
+      sWords.textContent = obj.shortForecast;
       let dWords = document.createElement('p');
       dWords = obj.detailedForecast;
       let wxImage = document.createElement('img');
@@ -236,8 +238,12 @@ async function getCity(city,state,country) {
       let endl2 = document.createElement('br');
       let endl3 = document.createElement('br');
       box.style.marginTop= "5%";
-      if(obj.number === 14) {
+      if(obj.number === 14 && width < 450) {
+        box.style.marginBottom= "60%";
+      } else if(obj.number === 14 && width > 450) {
         box.style.marginBottom= "40%";
+      } else if(obj.number === 14 && width > 750) {
+        box.style.marginBottom= "20%";
       }
       box.append(endl3,day,wxImage,endl,sWords,endl2,dWords);
       main.append(box);
