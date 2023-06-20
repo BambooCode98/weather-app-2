@@ -12,11 +12,63 @@ html,body{
 }
 
 canvas{
-  position: absolute;
+  position: fixed;
   z-index: -50;
+  display: block;
   /* background-color: #0c1445; */
+}
+
+.menuContainer{
+  display: flex;
+  flex-direction: column;
+  /* height: 100px; */
+  /* position: absolute; */
+  z-index: 0;
+  /* border: 1px solid red; */
+  /* justify-content: space-between; */
+  /* gap: 2%; */
+  width: 100%;
+  /* padding: 0.5%; */
+}
+
+.header {
+  padding: 0.5%;
+  border-bottom: white 1px solid;
+  position: fixed;
+  width: 100%;
+}
+
+.form{
+  display: flex;
+  flex-direction: column;
+  padding: 2%;
+  width: 100%;
+  height: 25%;
+  gap: 1%;
+  position: fixed;
+  bottom: 0;
+  /* border: 1px solid green; */
+  /* background-image: linear-gradient(#ffffffad,#000000,#000000);; */
+  overflow: scroll;
+}
+
+.form button {
+  width: 50%;
+  align-self: center;
+  padding: 1%;
+  margin-bottom: 5px;
+}
+
+.in1, .in2 {
+  padding: 1.5%;
+  margin-top: 5px;
 }
 
 /* button{
   color: black;
 } */
+.wxContainer{
+  overflow-y: scroll;
+  padding: 0.5%;
+
+}

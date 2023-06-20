@@ -4,20 +4,32 @@ let main = document.querySelector(".wxContainer");
 let cityInput = document.querySelector(".form");
 let in1 = document.querySelector(".in1");
 let in2 = document.querySelector(".in2");
+let body = document.querySelector(".body");
+let head = document.querySelector('.header');
 let lat, long, city, state, country = "United States";
 let getCityf = false;
 let getDataf = false;
 // let isDay = true;
-
+let called = false;
+let wxArray = [];
+let elArray  =[];
 let canvas = document.querySelector('.canvas');
-
-
-
 let ctx = canvas.getContext('2d'),
 width = canvas.width = window.innerWidth,
 height = canvas.height = window.innerHeight;
 
+
+
+
+
+
+window.addEventListener('resize', () => {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+})
+
 let stars = [];
+let rayArray = [];
 
 class Star{
   constructor(x,y,radius, rate) {
@@ -48,23 +60,107 @@ class Star{
   }
 }
 
+class Sunray{
+  constructor(x,y,w,h,amt,theta,amplitude) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.amt = amt;
+    this.theta = theta;
+    this.amp = amplitude;
+  }
+
+  grad = "";
+  rayChange = 0.1;
+  
+
+  update() {
+    ctx.save();
+    // ctx.beginPath();
+    ctx.translate(width/2,height/2);
+    ctx.rotate(this.theta);
+    this.rayChange+=this.amt*0.005;
+    ctx.rect(0,0,this.w,this.h+(this.amp*Math.sin(this.rayChange*0.1)));
+    // grad = getGradient(this.x,this.y,this.w,this.h);
+    // console.log(typeof grad);
+    // ctx.fillStyle = grad;
+    // ctx.fillRect(this.x,this.y,this.w,this.h);
+    // ctx.fill();
+    ctx.restore();
+    
+  }
+}
+
+for(let i = 0; i < 75; i++) {
+  // rayArray.push(new Sunray(0,0,10,25,5));
+  rayArray.push(new Sunray(0,0,(Math.random()*(9-1)+1),(Math.random()*(75-15)+15)*2,Math.random()*(i-i/2)+i/2,Math.PI*2*(Math.random()+2),(Math.random()*(10-5)+5)/2));
+}
+
+// console.log(rays);
+
+class Sun{
+  constructor(x,y) {
+    this.x = x;
+    this.y = y;
+    // this.rays = rays;
+  }
+
+
+  drawRay() {
+    // console.log(rays);
+    // ctx.beginPath();
+    rayArray.forEach(ray => {
+      ray.update();
+      // console.log(ray.update());
+    })
+    // ctx.fill();
+    // console.log("draw rays");
+
+  }
+  
+  update() {
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,50,0,Math.PI*2);
+    // ctx.fillRect
+    this.drawRay();
+    ctx.fillStyle = "#fce570";
+    // ctx.fillStyle = gradient;
+    // ctx.fillRect(0,0,50,50);
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#ffffff";
+    ctx.fill();
+    
+  }
+  
+}
+
 for(let i = 0; i < 50; i++) {
   stars.push(new Star(width*Math.random(), height * Math.random(), Math.random()*4, Math.random()*2));
 }
+
+let sun = new Sun(width/2,height/2);
 
 cityInput.addEventListener("submit", (e) => {
   e.preventDefault();
   let i1 = in1.value;
   let i2 = in2.value;
-  console.log(i1,i2);
+  // console.log(i1,i2);
   city = i1;
   state = i2;
+  console.log(elArray.length);
+  if(elArray.length != 0) {
+    elArray.forEach(el => {
+      // console.log(el);
+      el.remove();
+    })
+    elArray = [];
+  }
   if(city !== null && state !== null) {
     getCityf = true;
     getDataf = true;
-    console.log("true");
-
-    run()
+    console.log("getting city data");
+    run();
   }
 })
 
@@ -86,17 +182,23 @@ async function getCity() {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    // console.log(wxPeriods);
+    console.log(wxPeriods);
+    // console.log(wxArray, "before filling");
+    // wxPeriods.forEach(period => {
+    //   wxArray.push(period);
+    // })
 
     wxPeriods.forEach(obj => {
       let box = document.createElement("div");
-      console.log(obj);
+      // console.log(obj);
+      elArray.push(box);
       let day = document.createElement('h3');
       day.textContent = obj.name;
       let isDaytime = document.createElement('p');
       isDaytime = obj.isDaytime;
       if(obj.number === 1) {
         // console.log(isDaytime, "daytime?");
+        console.log(isDaytime);
         changeStyles(obj.isDaytime);
       }
       let sWords = document.createElement('p');
@@ -108,16 +210,28 @@ async function getCity() {
       let endl = document.createElement('br');
       let endl2 = document.createElement('br');
       let endl3 = document.createElement('br');
-      box.append(day,wxImage,endl3,isDaytime,endl,sWords,endl2,dWords);
+      box.style.marginTop= "5%";
+      if(obj.number === 14) {
+        box.style.marginBottom= "50%";
+      }
+      box.append(endl3,day,wxImage,endl,sWords,endl2,dWords);
       main.append(box);
     })
+    // console.log(wxArray, "after filling");
+
+    // wxArray = [];
+    // called = false;
     
   } catch {
+    // called = false;
     console.log("Could not get data");
   }
 }
+
+
 function run() {
-  if(getDataf) {
+  if(getDataf && !called) {
+    // called = true;
     getCity();
     // console.log("from bottom if");
   }
@@ -127,14 +241,26 @@ function run() {
 
 function changeStyles(isDay) {
   if(isDay) {
-    canvas.style.backgroundColor = "white";
+    // canvas.style.backgroundColor = "white";
+    body.style.color = "black";
+    body.backgroundColor = "#2EB5E5";
+    cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#ffffff,#ffffff)";
+    head.style.backgroundImage = "linear-gradient(#ffffff,#ffffff,#2EB5E5ad)";
+
+    animateDay();
   } else {
-    canvas.style.backgroundColor = "#0c1445";
+    // canvas.style.backgroundColor = "#0c1445";
+    body.style.color = "white";
+    cityInput.style.backgroundImage = "linear-gradient(#0c1445ad,#000000,#000000)";
+    head.style.backgroundImage = "linear-gradient(#000000,#000000,#0c1445ad)";
+
+    // console.log("nighttime");
+    animateNight();
   }
 }
 
 
-function animate() {
+function animateNight() {
   ctx.fillStyle = "#0c1445";
   ctx.fillRect(0,0,width,height);
 
@@ -142,7 +268,33 @@ function animate() {
     star.update();
     
   })
-  requestAnimationFrame(animate);
+  requestAnimationFrame(animateNight);
 }
 
-animate();
+function animateDay() {
+  ctx.fillStyle = "#2eb5e5";
+  ctx.fillRect(0,0,width,height);
+
+  
+  sun.update();
+  // rayArray.forEach(ray => {
+  //   ray.update();
+  // })
+
+  requestAnimationFrame(animateDay);
+
+}
+
+
+function collapseMenu() {
+  cityInput.style.transition = "";
+  cityInput.style.height = "0";
+}
+
+
+function getGradient(x,y,w,h) {
+  const gradient = ctx.createLinearGradient(x,y,w,h);
+  gradient.addColorStop(0,"yellow");
+  gradient.addColorStop(1,"#2eb5e5");
+  return gradient;
+}

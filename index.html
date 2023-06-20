@@ -7,22 +7,27 @@
     <link href="styles.css" rel="stylesheet">
     <title>Bamboo Weather</title>
   </head>
-  <body>
+  <body class="body">
     <canvas class="canvas"></canvas>
 
-    <header class="header">
-      <h1 class="title">
-        BambooWX
-      </h1>
-    </header>
+    <div class="menuContainer">
+      <header class="header">
+        <h1 class="title">
+          BambooWX
+        </h1>
+      </header>
+  
+      <form class="form">
+        <label>City:</label>
+        <input type="text" class="in1"/>
+        <!-- <br/> -->
+        <label>State:</label>
+        <input type="text" class="in2"/>
+        <br/>
+        <button type="submit">Submit</button> 
+      </form>
 
-    <form class="form">
-      <label>City:</label>
-      <input type="text" class="in1"/>
-      <label>State:</label>
-      <input type="text" class="in2"/>
-      <button type="submit">Submit</button> 
-    </form>
+    </div>
 
     <main class="wxContainer">
 
