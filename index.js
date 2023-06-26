@@ -15,6 +15,8 @@ let wxArray = [];
 let elArray  =[];
 let cities = [];
 let empty = true;
+let time = new Date();
+console.log(time.getDate());
 
 let canvas = document.querySelector('.canvas');
 let ctx = canvas.getContext('2d'),
@@ -79,14 +81,20 @@ class Sunray{
   rayChange = 0.1;
   
   gradient() {
+    const grad = getGradient(this.x,this.y,this.w,this.h);
     // console.log(x,y,w,h);
-    const gradient = ctx.createLinearGradient(this.x,this.y,this.w,this.h);
-    gradient.addColorStop(0,"#fce570");
-    gradient.addColorStop(0.5,"#fce570");
+    // const gradient = ctx.createLinearGradient(this.x,this.y,this.w,this.h);
+    // gradient.addColorStop(0,"#fce570");
+    // gradient.addColorStop(0.5,"#fce570");
     // gradient.addColorStop(0.75,"#fce570");
-    // gradient.addColorStop(0,"black");
-    gradient.addColorStop(1,"#2eb5e5");
-    return gradient;
+    // gradient.addColorStop(0,"red");
+    // gradient.addColorStop(0.25,"red");
+    // gradient.addColorStop(0.5,"red");
+    // gradient.addColorStop(0.75,"white");
+    // gradient.addColorStop(1,"blue");
+    // gradient.addColorStop(1,"#2eb5e5");
+    // return gradient;
+    return grad;
 
   }
 
@@ -218,7 +226,7 @@ async function getCity(city,state,country) {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    console.log(wxPeriods);
+    // console.log(wxPeriods);
     // console.log(wxArray, "before filling");
     // wxPeriods.forEach(period => {
     //   wxArray.push(period);
@@ -297,6 +305,7 @@ function changeStyles(isDay) {
     head.style.backgroundImage = "linear-gradient(#000000,#000000,#0c1445ad)";
 
     // console.log("nighttime");
+    // animateDay();
     animateNight();
   }
 }
@@ -305,7 +314,7 @@ function changeStyles(isDay) {
 function animateNight() {
   ctx.fillStyle = "#0c1445";
   ctx.fillRect(0,0,width,height);
-
+  // console.log(Date.now());
   stars.forEach(star => {
     star.update();
     
@@ -342,7 +351,39 @@ function collapseMenu() {
 
 
 function getGradient(x,y,w,h) {
+  const gradient = ctx.createLinearGradient(x,y,w,h);
+  // console.log(time.getDay());
+  if(time.getDate() === 4 && time.getMonth()+1 === 7) {
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(0.25,"red");
+    gradient.addColorStop(0.5,"red");
+    gradient.addColorStop(0.75,"white");
+    gradient.addColorStop(1,"blue");
+  } else if (time.getDate() === 24 && time.getMonth()+1 === 12) {
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(0.25,"red");
+    gradient.addColorStop(0.5,"red");
+    gradient.addColorStop(0.75,"green");
+    // gradient.addColorStop(1,"green");
+    // gradient.addColorStop(1,"#2eb5e5");
 
+  } else {
+    gradient.addColorStop(0,"#fce570");
+    gradient.addColorStop(0.5,"#fce570");
+    // gradient.addColorStop(0.75,"#fce570");
+    gradient.addColorStop(1,"#2eb5e5");
+
+  }
+  // 
+  // console.log('created grad');
+  //4th of july
+  // gradient.addColorStop(0,"red");
+  // gradient.addColorStop(0.25,"red");
+  // gradient.addColorStop(0.5,"red");
+  // gradient.addColorStop(0.75,"white");
+  // gradient.addColorStop(1,"blue");
+  //4th ends
+  return gradient;
 }
 
 
@@ -372,3 +413,10 @@ function defCities() {
     getCity(defaultCity,defaultState);
   }
 }
+
+
+// function getHolidayColors() {
+//   if(time.getDay() === 23 && time.getMonth()+1 === 6) {
+
+//   }
+// }
