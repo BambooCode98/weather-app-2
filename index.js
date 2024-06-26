@@ -36,6 +36,7 @@ window.addEventListener('resize', () => {
 
 let stars = [];
 let rayArray = [];
+let drops = [];
 
 class Star{
   constructor(x,y,radius, rate) {
@@ -159,8 +160,49 @@ class Sun{
   
 }
 
+class Rain{
+  constructor(x,y, radius) {
+    this.x = x;
+    this.y = y;
+    this.rad = radius;
+    // this.rays = rays;
+  }
+
+
+  drawDrop() {
+    // console.log(rays);
+    // ctx.beginPath();
+    drops.forEach(drop => {
+      drop.update();
+      // console.log(ray.update());
+    })
+    // ctx.fill();
+    // console.log("draw rays");
+
+  }
+  
+  update() {
+    ctx.beginPath();
+    ctx.fillStyle = "#42bcf5";
+    this.x -= 0.2;
+    this.y += 0.2+this.rad;
+    ctx.arc(this.x,this.y,this.rad,0,Math.PI*2);
+    ctx.fill();
+
+    if(this.x < 0) this.x = width;
+    if(this.x > width) this.x = 0;
+    if(this.y < 0) this.y = height;
+    if(this.y > height) this.y = 0;
+  }
+  
+}
+
 for(let i = 0; i < 50; i++) {
   stars.push(new Star(width*Math.random(), height * Math.random(), Math.random()*4, Math.random()*2));
+}
+
+for(let i = 0; i < 50; i++) {
+  drops.push(new Rain(width*Math.random(), height*Math.random(), 5*Math.random()));
 }
 
 let sun = new Sun(width/2,height/2);
@@ -218,7 +260,7 @@ async function getCity(city,state,country) {
   // console.log(cityr[0]);
   lat = (cityr[0].lat).toFixed(2);
   long = (cityr[0].lon).toFixed(2);
-  // console.log(lat,long);
+  console.log(lat,long);
 
   try {
     let data = await fetch(`https://api.weather.gov/points/${lat},${long}`, {mode: 'cors'});
@@ -226,7 +268,7 @@ async function getCity(city,state,country) {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    // console.log(wxPeriods);
+    console.log(wxPeriods);
     // console.log(wxArray, "before filling");
     // wxPeriods.forEach(period => {
     //   wxArray.push(period);
@@ -243,8 +285,12 @@ async function getCity(city,state,country) {
       isDaytime = obj.isDaytime;
       if(obj.number === 1) {
         // console.log(isDaytime, "daytime?");
-        // console.log(isDaytime);
-        changeStyles(obj.isDaytime);
+        // console.log(isDaytime, obj.probabilityOfPrecipitation);
+        if(obj.probabilityOfPrecipitation.value == 0 || obj.probabilityOfPrecipitation.value != null) {
+          changeStyles(obj.isDaytime, obj.probabilityOfPrecipitation.value);
+        } else {
+          changeStyles(obj.isDaytime, obj.probabilityOfPrecipitation.value);
+        }
       }
       let sWords = document.createElement('p');
       sWords.classList.add('short');
@@ -252,7 +298,7 @@ async function getCity(city,state,country) {
       let dWords = document.createElement('p');
       dWords = obj.detailedForecast;
       let wxImage = document.createElement('img');
-      wxImage.src = obj.icon;
+      wxImage.src = `https://api.weather.gov/${obj.icon}`;
       let endl = document.createElement('br');
       let endl2 = document.createElement('br');
       let endl3 = document.createElement('br');
@@ -267,7 +313,7 @@ async function getCity(city,state,country) {
       box.append(endl3,day,wxImage,endl,sWords,endl2,dWords);
       main.append(box);
     })
-    // console.log(wxArray, "after filling");
+    console.log(wxArray, "after filling");
 
     // wxArray = [];
     // called = false;
@@ -289,8 +335,8 @@ function run(city,state,country) {
          
 
 
-function changeStyles(isDay) {
-  if(isDay) {
+function changeStyles(isDay, precipValue) {
+  if(isDay && precipValue == 0 || isDay && precipValue == null) {
     // canvas.style.backgroundColor = "white";
     body.style.color = "black";
     body.backgroundColor = "#2EB5E5";
@@ -298,6 +344,13 @@ function changeStyles(isDay) {
     head.style.backgroundImage = "linear-gradient(#ffffff,#ffffff,#2EB5E5ad)";
 
     animateDay();
+  } else if(isDay && precipValue > 0){
+    // canvas.style.backgroundColor = "#0c1445";
+    body.style.color = "white";
+    console.log('animating rain...');
+    cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#2c5ea8,#2c5ea8)";
+    head.style.backgroundImage = "linear-gradient(#2c5ea8,#2c5ea8,#2EB5E5ad)";
+    animateRain();
   } else {
     // canvas.style.backgroundColor = "#0c1445";
     body.style.color = "white";
@@ -340,6 +393,30 @@ function animateDay() {
   sun.update();
   
   requestAnimationFrame(animateDay);
+
+}
+
+console.log(drops);
+function animateRain() {
+  ctx.fillStyle = "rgba(44, 94, 168, 0.1)";
+  ctx.fillRect(0,0,width, height);
+  
+  // ctx.beginPath();
+  ctx.beginPath();
+
+  drops.forEach(drop => {
+    drop.x -= 0.1;
+    drop.y += 0.1;
+    // ctx.fillStyle = "#42bcf5";
+    // ctx.arc(500,500,100,0,Math.PI*2);
+    drop.update();
+  })
+    // ctx.arc(500, 500, 100, 0, Math.PI*2);
+  ctx.fill();
+
+  // ctx.fill();
+
+  requestAnimationFrame(animateRain);
 
 }
 
