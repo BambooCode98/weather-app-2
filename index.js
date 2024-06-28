@@ -51,8 +51,8 @@ class Star{
   update() {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size,0,Math.PI*2);
-    ctx.fillStyle = "white";
-    ctx.shadowColor = "white";
+    // ctx.fillStyle = "white";
+    // ctx.shadowColor = "white";
     // ctx.shadowBlur = this.blur*2;
     this.strobe();
     ctx.fill();
@@ -339,14 +339,14 @@ function run(city,state,country) {
 
 function changeStyles(isDay, precipValue) {
   if(isDay && precipValue == 0 || isDay && precipValue == null) {
-    
+
     body.style.color = "black";
     body.backgroundColor = "#2EB5E5";
     cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#ffffff,#ffffff)";
     head.style.backgroundImage = "linear-gradient(#ffffff,#ffffff,#2EB5E5ad)";
 
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "#ffffff";
+    // ctx.shadowBlur = 15;
+    // ctx.shadowColor = "#ffffff";
     ctx.fillStyle = "#2eb5e5";
     ctx.fillRect(0,0,width,height);
 
@@ -396,7 +396,8 @@ function animateNight() {
 }
 
 function animateDay() {
-  
+  ctx.fillStyle = "#2eb5e5";
+  ctx.fillRect(0,0,width,height);
 
   
   ctx.beginPath();
