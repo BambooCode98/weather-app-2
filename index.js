@@ -16,13 +16,13 @@ let elArray  =[];
 let cities = [];
 let empty = true;
 let time = new Date();
-console.log(time.getDate());
+// console.log(time.getDate());
 
 let canvas = document.querySelector('.canvas');
 let ctx = canvas.getContext('2d'),
 width = canvas.width = window.innerWidth,
 height = canvas.height = window.innerHeight;
-
+// ctx.save();
 // let grad = getGradient(this.x,this.y,this.w,this.h);
 
 
@@ -184,6 +184,8 @@ class Rain{
   update() {
     ctx.beginPath();
     ctx.fillStyle = "#42bcf5";
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = null;
     this.x -= 0.2;
     this.y += 0.2+this.rad;
     ctx.arc(this.x,this.y,this.rad,0,Math.PI*2);
@@ -260,7 +262,7 @@ async function getCity(city,state,country) {
   // console.log(cityr[0]);
   lat = (cityr[0].lat).toFixed(2);
   long = (cityr[0].lon).toFixed(2);
-  console.log(lat,long);
+  // console.log(lat,long);
 
   try {
     let data = await fetch(`https://api.weather.gov/points/${lat},${long}`, {mode: 'cors'});
@@ -268,7 +270,7 @@ async function getCity(city,state,country) {
     let forecast = await fetch(wxData.properties.forecast, {mode: 'cors'});
     let forecastd = await forecast.json();
     let wxPeriods = forecastd.properties.periods;
-    console.log(wxPeriods);
+    // console.log(wxPeriods);
     // console.log(wxArray, "before filling");
     // wxPeriods.forEach(period => {
     //   wxArray.push(period);
@@ -313,7 +315,7 @@ async function getCity(city,state,country) {
       box.append(endl3,day,wxImage,endl,sWords,endl2,dWords);
       main.append(box);
     })
-    console.log(wxArray, "after filling");
+    // console.log(wxArray, "after filling");
 
     // wxArray = [];
     // called = false;
@@ -337,36 +339,54 @@ function run(city,state,country) {
 
 function changeStyles(isDay, precipValue) {
   if(isDay && precipValue == 0 || isDay && precipValue == null) {
-    // canvas.style.backgroundColor = "white";
+    
     body.style.color = "black";
     body.backgroundColor = "#2EB5E5";
     cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#ffffff,#ffffff)";
     head.style.backgroundImage = "linear-gradient(#ffffff,#ffffff,#2EB5E5ad)";
 
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#ffffff";
+    ctx.fillStyle = "#2eb5e5";
+    ctx.fillRect(0,0,width,height);
+
     animateDay();
   } else if(isDay && precipValue > 0){
-    // canvas.style.backgroundColor = "#0c1445";
+
     body.style.color = "white";
-    console.log('animating rain...');
     cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#2c5ea8,#2c5ea8)";
     head.style.backgroundImage = "linear-gradient(#2c5ea8,#2c5ea8,#2EB5E5ad)";
+    
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,width,height);
+
     animateRain();
-  } else {
-    // canvas.style.backgroundColor = "#0c1445";
+  }  else if(!isDay && precipValue > 0){
+
+    body.style.color = "white";
+    cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#2c5ea8,#2c5ea8)";
+    head.style.backgroundImage = "linear-gradient(#2c5ea8,#2c5ea8,#2EB5E5ad)";
+
+    ctx.fillStyle = "#0c1445";
+    ctx.fillRect(0,0,width,height);
+
+    animateRainNight();
+  } else if(!isDay) {
+
     body.style.color = "white";
     cityInput.style.backgroundImage = "linear-gradient(#0c1445ad,#000000,#000000)";
     head.style.backgroundImage = "linear-gradient(#000000,#000000,#0c1445ad)";
 
-    // console.log("nighttime");
-    // animateDay();
+    ctx.fillStyle = "#0c1445";
+    ctx.fillRect(0,0,width,height);
+
     animateNight();
   }
 }
 
 
 function animateNight() {
-  ctx.fillStyle = "#0c1445";
-  ctx.fillRect(0,0,width,height);
+  
   // console.log(Date.now());
   stars.forEach(star => {
     star.update();
@@ -376,8 +396,7 @@ function animateNight() {
 }
 
 function animateDay() {
-  ctx.fillStyle = "#2eb5e5";
-  ctx.fillRect(0,0,width,height);
+  
 
   
   ctx.beginPath();
@@ -396,12 +415,38 @@ function animateDay() {
 
 }
 
-console.log(drops);
+// console.log(drops);
 function animateRain() {
   ctx.fillStyle = "rgba(44, 94, 168, 0.1)";
   ctx.fillRect(0,0,width, height);
   
   // ctx.beginPath();
+  ctx.beginPath();
+
+  drops.forEach(drop => {
+    drop.x -= 0.1;
+    drop.y += 0.1;
+    // ctx.fillStyle = "#42bcf5";
+    // ctx.arc(500,500,100,0,Math.PI*2);
+    drop.update();
+  })
+    // ctx.arc(500, 500, 100, 0, Math.PI*2);
+  ctx.fill();
+
+  // ctx.fill();
+
+  requestAnimationFrame(animateRain);
+
+}
+
+function animateRainNight() {
+  // ctx.restore();
+  
+  ctx.fillStyle = "rgba(44, 94, 168, 0.1)";
+  ctx.fillRect(0,0,width, height);
+  
+  // ctx.beginPath();
+
   ctx.beginPath();
 
   drops.forEach(drop => {
