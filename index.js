@@ -16,14 +16,18 @@ let elArray  =[];
 let cities = [];
 let empty = true;
 let time = new Date();
+let animRunningDay = false;
+let animRunningRain = false;
 // console.log(time.getDate());
 
 let canvas = document.querySelector('.canvas');
+let canvas2 = document.querySelector(".canvas2");
 let ctx = canvas.getContext('2d'),
+ctx2 = canvas2.getContext('2d'),
 width = canvas.width = window.innerWidth,
 height = canvas.height = window.innerHeight;
-// ctx.save();
-// let grad = getGradient(this.x,this.y,this.w,this.h);
+ctx2.width = width;
+ctx2.height = height;
 
 
 defCities();
@@ -49,10 +53,12 @@ class Star{
   inc = 1;
 
   update() {
+
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size,0,Math.PI*2);
-    // ctx.fillStyle = "white";
-    // ctx.shadowColor = "white";
+    ctx.fillStyle = "white";
+    ctx.shadowColor = "white";
+    // perhaps i need another check? ---->>> morning problem
     // ctx.shadowBlur = this.blur*2;
     this.strobe();
     ctx.fill();
@@ -184,8 +190,8 @@ class Rain{
   update() {
     ctx.beginPath();
     ctx.fillStyle = "#42bcf5";
-    ctx.shadowBlur = 0;
-    ctx.shadowColor = null;
+    // ctx.shadowBlur = 0;
+    // ctx.shadowColor = null;
     this.x -= 0.2;
     this.y += 0.2+this.rad;
     ctx.arc(this.x,this.y,this.rad,0,Math.PI*2);
@@ -275,7 +281,7 @@ async function getCity(city,state,country) {
     // wxPeriods.forEach(period => {
     //   wxArray.push(period);
     // })
-
+    ctx.clearRect(0,0,width,height);
     wxPeriods.forEach(obj => {
       let box = document.createElement("div");
       // console.log(obj);
@@ -290,7 +296,7 @@ async function getCity(city,state,country) {
         // console.log(isDaytime, obj.probabilityOfPrecipitation);
         if(obj.probabilityOfPrecipitation.value == 0 || obj.probabilityOfPrecipitation.value != null) {
           changeStyles(obj.isDaytime, obj.probabilityOfPrecipitation.value);
-        } else {
+          } else {
           changeStyles(obj.isDaytime, obj.probabilityOfPrecipitation.value);
         }
       }
@@ -347,9 +353,14 @@ function changeStyles(isDay, precipValue) {
 
     // ctx.shadowBlur = 15;
     // ctx.shadowColor = "#ffffff";
-    ctx.fillStyle = "#2eb5e5";
-    ctx.fillRect(0,0,width,height);
-
+    // ctx.fillStyle = "#2eb5e5";
+    // ctx.fillRect(0,0,width,height);
+    ctx.clearRect(0,0,width,height);
+    ctx.globalAlpha = 1.0;
+    // console.log("animate day");
+    if(animRunningDay) return;
+    animRunningDay = true;
+    animRunningRain = false;
     animateDay();
   } else if(isDay && precipValue > 0){
 
@@ -357,9 +368,20 @@ function changeStyles(isDay, precipValue) {
     cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#2c5ea8,#2c5ea8)";
     head.style.backgroundImage = "linear-gradient(#2c5ea8,#2c5ea8,#2EB5E5ad)";
     
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0,0,width,height);
-
+    // ctx.fillStyle = "#ffffff";
+    // ctx.fillRect(0,0,width,height);
+    // ctx.fillStyle = "#ffffff";
+    // ctx.fillRect(0,0,width,height);
+    // ctx.fillStyle = "#rgb(44, 94, 168)";
+    // ctx.fillRect(0,0,width,height);
+    // console.log("animate rain");
+    ctx.clearRect(0,0,width,height);
+    
+    // ctx.shadowBlur = 0;
+    // ctx.shadowColor = "";
+    if(animRunningRain) return;
+    animRunningRain = true;
+    animRunningDay = false;
     animateRain();
   }  else if(!isDay && precipValue > 0){
 
@@ -367,9 +389,9 @@ function changeStyles(isDay, precipValue) {
     cityInput.style.backgroundImage = "linear-gradient(#2EB5E5ad,#2c5ea8,#2c5ea8)";
     head.style.backgroundImage = "linear-gradient(#2c5ea8,#2c5ea8,#2EB5E5ad)";
 
-    ctx.fillStyle = "#0c1445";
-    ctx.fillRect(0,0,width,height);
-
+    // ctx.fillStyle = "#0c1445";
+    // ctx.fillRect(0,0,width,height);
+    ctx.clearRect(0,0,width,height);
     animateRainNight();
   } else if(!isDay) {
 
@@ -379,15 +401,17 @@ function changeStyles(isDay, precipValue) {
 
     ctx.fillStyle = "#0c1445";
     ctx.fillRect(0,0,width,height);
-
+    // ctx.clearRect(0,0,width,height);
     animateNight();
   }
 }
 
 
 function animateNight() {
-  
+  ctx.fillStyle = "#0c1445";
+  ctx.fillRect(0,0,width,height);
   // console.log(Date.now());
+  
   stars.forEach(star => {
     star.update();
     
@@ -396,6 +420,7 @@ function animateNight() {
 }
 
 function animateDay() {
+  if(animRunningRain) return;
   ctx.fillStyle = "#2eb5e5";
   ctx.fillRect(0,0,width,height);
 
@@ -411,14 +436,20 @@ function animateDay() {
   })
   ctx.fill();
   sun.update();
-  
+  animRunningDay = true;
   requestAnimationFrame(animateDay);
 
 }
 
 // console.log(drops);
 function animateRain() {
+  // ctx.clearRect(0,0,width,height);
+  // ctx.shadow
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = "";
+  // ctx.globalAlpha = 0.1;
   ctx.fillStyle = "rgba(44, 94, 168, 0.1)";
+  // ctx.fillStyle = "rgb(44, 94, 168)";
   ctx.fillRect(0,0,width, height);
   
   // ctx.beginPath();
@@ -434,7 +465,7 @@ function animateRain() {
     // ctx.arc(500, 500, 100, 0, Math.PI*2);
   ctx.fill();
 
-  // ctx.fill();
+  // animRunningRain = true;
 
   requestAnimationFrame(animateRain);
 
